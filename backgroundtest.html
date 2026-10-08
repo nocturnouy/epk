@@ -1,0 +1,194 @@
+<!doctype html>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>Code Writing Itself</title>
+	<style>
+		* { box-sizing: border-box; }
+		body {
+			width: 100%;
+			height: 100vh;
+			height: 100dvh;
+			margin: 0;
+			overflow: hidden;
+			color: #d6deeb;
+			background: radial-gradient(ellipse at 50% 0, #292929, #111 65%, #080808);
+			font: 14px/1.7 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+		}
+		.editor {
+			width: 100%;
+			height: 100%;
+			overflow: hidden;
+			filter:blur(2px) contrast(0.5) brightness(10);
+		}
+		.code-window {
+			width: 100%;
+			height: 100%;
+			overflow: auto;
+			padding: clamp(18px, 3vw, 40px);
+			overscroll-behavior: contain;
+			font-size: clamp(13px, 1.15vw, 17px);
+			filter:blur(1px) contrast(0.5) brightness(10);
+		}
+		pre { margin: 0; white-space: pre; }
+		#code { color: #dedede; text-shadow: 0 0 2px #fff8, 0 0 8px #fff2; }
+		.cursor { display: inline-block; width: 8px; height: 1.15em; margin-left: 2px; vertical-align: -3px; background: #dedede; box-shadow: 0 0 5px #fff8; animation: blink 1s steps(2, start) infinite; }
+		.keyword { color: #eee; }
+		.function { color: #ccc; }
+		.string { color: #d8d8d8; }
+		.comment { color: #888; }
+		.number { color: #aaa; }
+		@keyframes blink { to { visibility: hidden; } }
+		@media (max-width: 520px) { .code-window { padding: 18px 14px; font-size: 12px; } }
+		@media (prefers-reduced-motion: reduce) { .cursor { animation: none; } }
+	</style>
+</head>
+<body>
+	<main class="editor" aria-label="Animated code editor">
+		<section class="code-window" aria-label="Code being typed"><pre><code id="code"></code><span class="cursor" aria-hidden="true"></span></pre></section>
+	</main>
+	<script>
+		const source = `// Build a tiny night sky, one star at a time
+const canvas = document.querySelector("#sky");
+const context = canvas.getContext("2d");
+const stars = [];
+const colors = ["#fff4c2", "#b8d7ff", "#ffc7df"];
+const settings = {
+	count: 180,
+	speed: 0.18,
+	twinkle: 0.025,
+	background: "#080b14"
+};
+
+function randomBetween(min, max) {
+	return Math.random() * (max - min) + min;
+}
+
+function makeStar(width, height) {
+	return {
+		x: randomBetween(0, width),
+		y: randomBetween(0, height),
+		radius: randomBetween(0.4, 1.8),
+		phase: randomBetween(0, Math.PI * 2),
+		color: colors[Math.floor(Math.random() * colors.length)]
+	};
+}
+
+function resizeCanvas() {
+	const scale = window.devicePixelRatio || 1;
+	const { innerWidth: width, innerHeight: height } = window;
+
+	canvas.width = width * scale;
+	canvas.height = height * scale;
+	canvas.style.width = width + "px";
+	canvas.style.height = height + "px";
+	context.setTransform(scale, 0, 0, scale, 0, 0);
+
+	stars.length = 0;
+	for (let index = 0; index < settings.count; index++) {
+		stars.push(makeStar(width, height));
+	}
+}
+
+function paintBackground(width, height) {
+	const night = context.createLinearGradient(0, 0, 0, height);
+	night.addColorStop(0, "#17233b");
+	night.addColorStop(0.55, settings.background);
+	night.addColorStop(1, "#11101f");
+	context.fillStyle = night;
+	context.fillRect(0, 0, width, height);
+}
+
+function drawStar(star, time) {
+	const shimmer = 0.45 + Math.sin(time * settings.twinkle + star.phase) * 0.35;
+	context.globalAlpha = shimmer;
+	context.fillStyle = star.color;
+	context.beginPath();
+	context.arc(star.x, star.y, star.radius, 0, Math.PI * 2);
+	context.fill();
+}
+
+function drawMoon(width, height) {
+	const x = width * 0.78;
+	const y = height * 0.24;
+	const glow = context.createRadialGradient(x, y, 8, x, y, 90);
+	glow.addColorStop(0, "#fff2c455");
+	glow.addColorStop(1, "#fff2c400");
+
+	context.fillStyle = glow;
+	context.fillRect(x - 90, y - 90, 180, 180);
+	context.globalAlpha = 1;
+	context.fillStyle = "#fff2c4";
+	context.beginPath();
+	context.arc(x, y, 22, 0, Math.PI * 2);
+	context.fill();
+}
+
+function animate(time = 0) {
+	const width = window.innerWidth;
+	const height = window.innerHeight;
+
+	paintBackground(width, height);
+	drawMoon(width, height);
+	for (const star of stars) {
+		star.y += settings.speed * 0.01;
+		if (star.y > height) star.y = 0;
+		drawStar(star, time);
+	}
+
+	context.globalAlpha = 1;
+	window.requestAnimationFrame(animate);
+}
+
+window.addEventListener("resize", resizeCanvas, { passive: true });
+resizeCanvas();
+animate();
+
+console.log("Somewhere, a little constellation wakes up.");`;
+
+		const output = document.getElementById("code");
+		const codeWindow = document.querySelector(".code-window");
+		let position = 0;
+		let timer;
+		let generated = "";
+
+		function highlighted(text) {
+			const escaped = text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+			return escaped.replace(/(\/\/[^\n]*|"[^"\n]*"|'[^'\n]*'|\b(?:async|function|const|for|of|await|return|new|then)\b|\b\d+\b|\b(?:sleep|resolve|setTimeout|document|querySelectorAll|Promise|setProperty|classList|add|entries|console|log)\b)/g, token => {
+				let kind = "function";
+				if (token.startsWith("//")) kind = "comment";
+				else if (token.startsWith('"') || token.startsWith("'")) kind = "string";
+				else if (/^\d+$/.test(token)) kind = "number";
+				else if (/^(async|function|const|for|of|await|return|new|then)$/.test(token)) kind = "keyword";
+				return `<span class="${kind}">${token}</span>`;
+			});
+		}
+
+		function typeNext() {
+			if (position >= source.length) {
+				generated += "\n\n";
+				position = 0;
+			}
+			const start = position;
+			let typed = 0;
+			while (position < source.length && typed < 16) {
+				const char = source[position++];
+				typed++;
+				if (char === "\n" || /[{}();,]/.test(char)) break;
+			}
+			generated += source.slice(start, position);
+			if (generated.length > 16000) {
+				const trimAt = generated.indexOf("\n", generated.length - 12000);
+				if (trimAt !== -1) generated = generated.slice(trimAt + 1);
+			}
+			output.innerHTML = highlighted(generated);
+			codeWindow.scrollTop = codeWindow.scrollHeight;
+			const lastChar = source[position - 1];
+			timer = window.setTimeout(typeNext, lastChar === "\n" ? 30 : /[{}();,]/.test(lastChar) ? 8 : 3);
+		}
+
+		typeNext();
+	</script>
+</body>
+</html>
