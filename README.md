@@ -1,2 +1,66 @@
-# epk
-Artist electronic press kit
+# Santisima Fu3ga Electronic Press Kit
+
+A static electronic press kit (EPK) for Santisima Fu3ga, designed as a dark,
+terminal-inspired artist page. It includes artist information, music links,
+selected gigs, press imagery, a technical rider, booking contact information,
+and an animated code-themed background.
+
+## Features
+
+- Responsive two-column EPK layout that adapts to smaller screens.
+- Animated code background displayed behind the page content.
+- Hero banner drawn in a canvas with grayscale, contrast, grain, and
+  brightness-based transparency effects.
+- Press photo drawn into a canvas with grayscale and contrast filtering.
+- System clock showing the viewer's local time.
+- Latest repository commit date fetched from the GitHub API and displayed in
+  UTC. If the request fails, the status displays `SYS_UPDATE: OFFLINE`.
+- Reduced page styling is organized in a dedicated stylesheet; page behavior
+  is in a separate JavaScript file.
+
+## Project files
+
+| Path | Purpose |
+| --- | --- |
+| `fu3ga.html` | Main press kit page and content markup |
+| `fu3ga.css` | Page styling, responsive layout, and background layering |
+| `fu3ga.js` | Canvas image processing, system clock, and GitHub update lookup |
+| `background.html` | Animated code background rendered in the page iframe |
+| `media/hero-banner.jpg` | Local source image for the canvas hero banner |
+| `media/press-photo.jpg` | Local source image for the press-photo canvas |
+
+
+## Pending
+
+Before publishing, complete or verify these items in `fu3ga.html`:
+
+- Replace both placeholder biography paragraphs with the final artist bio.
+- Add the real SoundCloud player embed and link to the artist's profile.
+- Replace the sample gig entries with confirmed events, venues, dates, and
+  locations; remove any unconfirmed listings.
+- Link the press-kit download button to the actual downloadable press-kit file.
+- Replace `booking@yourdomain.com` with the active booking email address.
+- Replace the `#` social links with the artist's Instagram, SoundCloud, and
+  Resident Advisor profile URLs.
+
+## Changelog
+
+### 0.0.2
+
+- Added a live GitHub API lookup to show the repository's latest commit date in
+  the terminal status bar.
+- Added comments in the JavaScript describing the primary image, clock, and
+  repository-date functions.
+- Refactored the page styles into `fu3ga.css` and behavior into `fu3ga.js`.
+- Added a local hero-banner image rendered through canvas, with grayscale,
+  contrast, grain, and transparent dark pixels.
+- Added a local press photo rendered through canvas with grayscale and contrast
+  filtering.
+- Added the animated code background and layered it behind the press-kit page.
+- Used CSS nesting to group related styles.
+
+### 0.0.1
+
+- Created the initial artist press-kit layout with biography, music, gigs,
+  press image, technical rider, booking contact, and footer sections.
+- Added a terminal-inspired visual theme and system clock.

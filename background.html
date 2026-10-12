@@ -3,11 +3,13 @@
 <head>
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<title>Code Writing Itself</title>
+	<title>Background Frame</title>
 	<style>
-		* { box-sizing: border-box; }
+		* {
+			box-sizing: border-box;
+		}
+
 		body {
-			width: 100%;
 			height: 100vh;
 			height: 100dvh;
 			margin: 0;
@@ -16,38 +18,61 @@
 			background: radial-gradient(ellipse at 50% 0, #292929, #111 65%, #080808);
 			font: 14px/1.7 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
 		}
-		.editor {
-			width: 100%;
-			height: 100%;
-			overflow: hidden;
-			filter:blur(2px) contrast(0.5) brightness(10);
-		}
+
 		.code-window {
 			width: 100%;
-			height: 100%;
+			height: 100vh;
+			height: 100dvh;
 			overflow: auto;
 			padding: clamp(18px, 3vw, 40px);
 			overscroll-behavior: contain;
 			font-size: clamp(13px, 1.15vw, 17px);
-			filter:blur(1px) contrast(0.5) brightness(10);
+			filter: blur(1px) contrast(0.5) brightness(10);
+			text-shadow: 0 3px 2px #fff, 0 5px 5px #fff, 0 10px 10px #fff, 0 20px 20px #fff, 0 40px 40px #fff;
 		}
-		pre { margin: 0; white-space: pre; }
-		#code { color: #dedede; text-shadow: 0 0 2px #fff8, 0 0 8px #fff2; }
-		.cursor { display: inline-block; width: 8px; height: 1.15em; margin-left: 2px; vertical-align: -3px; background: #dedede; box-shadow: 0 0 5px #fff8; animation: blink 1s steps(2, start) infinite; }
+
+		pre {
+			margin: 0;
+			white-space: pre;
+		}
+
+		#code { color: #dedede; }
+
+		.cursor {
+			display: inline-block;
+			width: 8px;
+			height: 1.15em;
+			margin-left: 2px;
+			vertical-align: -3px;
+			background: #dedede;
+			box-shadow: 0 0 5px #fff8;
+			animation: blink 1s steps(2, start) infinite;
+		}
+
 		.keyword { color: #eee; }
 		.function { color: #ccc; }
 		.string { color: #d8d8d8; }
 		.comment { color: #888; }
 		.number { color: #aaa; }
-		@keyframes blink { to { visibility: hidden; } }
-		@media (max-width: 520px) { .code-window { padding: 18px 14px; font-size: 12px; } }
-		@media (prefers-reduced-motion: reduce) { .cursor { animation: none; } }
+
+		@keyframes blink {
+			to { visibility: hidden; }
+		}
+
+		@media (max-width: 520px) {
+			.code-window {
+				padding: 18px 14px;
+				font-size: 12px;
+			}
+		}
+
+		@media (prefers-reduced-motion: reduce) {
+			.cursor { animation: none; }
+		}
 	</style>
 </head>
 <body>
-	<main class="editor" aria-label="Animated code editor">
-		<section class="code-window" aria-label="Code being typed"><pre><code id="code"></code><span class="cursor" aria-hidden="true"></span></pre></section>
-	</main>
+	<main class="code-window" aria-label="Animated code background"><pre><code id="code"></code><span class="cursor" aria-hidden="true"></span></pre></main>
 	<script>
 		const source = `// Build a tiny night sky, one star at a time
 const canvas = document.querySelector("#sky");
@@ -150,7 +175,6 @@ console.log("Somewhere, a little constellation wakes up.");`;
 		const output = document.getElementById("code");
 		const codeWindow = document.querySelector(".code-window");
 		let position = 0;
-		let timer;
 		let generated = "";
 
 		function highlighted(text) {
@@ -185,7 +209,7 @@ console.log("Somewhere, a little constellation wakes up.");`;
 			output.innerHTML = highlighted(generated);
 			codeWindow.scrollTop = codeWindow.scrollHeight;
 			const lastChar = source[position - 1];
-			timer = window.setTimeout(typeNext, lastChar === "\n" ? 30 : /[{}();,]/.test(lastChar) ? 8 : 3);
+			window.setTimeout(typeNext, lastChar === "\n" ? 30 : /[{}();,]/.test(lastChar) ? 8 : 3);
 		}
 
 		typeNext();
