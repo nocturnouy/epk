@@ -23,9 +23,9 @@ and an animated code-themed background.
 
 | Path | Purpose |
 | --- | --- |
-| `fu3ga.html` | Main press kit page and content markup |
-| `fu3ga.css` | Page styling, responsive layout, and background layering |
-| `fu3ga.js` | Canvas image processing, system clock, and GitHub update lookup |
+| `index.html` | Main press kit page and content markup; GitHub Pages entry point |
+| `styles.css` | Page styling, responsive layout, and background layering |
+| `scripts.js` | Canvas image processing, system clock, and GitHub update lookup |
 | `background.html` | Animated code background rendered in the page iframe |
 | `media/pinterest-video.mp4` | Local source video for the canvas hero banner |
 | `media/press-photo.jpg` | Local source image for the press-photo canvas |
@@ -33,7 +33,7 @@ and an animated code-themed background.
 
 ## Pending
 
-Before publishing, complete or verify these items in `fu3ga.html`:
+Before publishing, complete or verify these items in `index.html`:
 
 - Replace both placeholder biography paragraphs with the final artist bio.
 - Add the real SoundCloud player embed and link to the artist's profile.
@@ -61,7 +61,7 @@ Before publishing, complete or verify these items in `fu3ga.html`:
   the terminal status bar.
 - Added comments in the JavaScript describing the primary image, clock, and
   repository-date functions.
-- Refactored the page styles into `fu3ga.css` and behavior into `fu3ga.js`.
+- Split page styles into `styles.css` and behavior into `scripts.js`.
 - Added a local hero-banner image rendered through canvas, with grayscale,
   contrast, grain, and transparent dark pixels.
 - Added a local press photo rendered through canvas with grayscale and contrast
