@@ -50,6 +50,7 @@ Before publishing, complete or verify these items in `index.html`:
 
 ### 0.0.3
 
+- Updated the artist biography and selected gigs sections.
 - Replaced the static hero-banner image with a looping local video rendered
   frame-by-frame through canvas.
 - Preserved the hero's grayscale blend, contrast, grain, and transparent dark
