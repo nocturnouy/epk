@@ -12,6 +12,8 @@ and an animated code-themed background.
 - Hero video drawn in a canvas with grayscale, contrast, grain, and
   brightness-based transparency effects, processed at up to 15 frames per
   second and capped at 640 × 360 pixels for mobile performance.
+- Falls back to the locally processed hero image if video playback fails.
+- Does not load the animated code-background iframe on mobile viewports.
 - Press photo drawn into a canvas with grayscale and contrast filtering.
 - System clock showing the viewer's local time.
 - Latest repository commit date fetched from the GitHub API and displayed in
@@ -54,6 +56,10 @@ Before publishing, complete or verify these items in `index.html`:
   pixels, with a configurable 0–100 grayscale setting.
 - Limited video canvas processing to 15 frames per second and a maximum
   640 × 360 canvas size for improved mobile performance.
+- Added a processed still-image fallback for browsers where the hero video
+  fails to load or play.
+- Removed the animated background iframe on mobile and deferred loading it on
+  larger viewports.
 
 ### 0.0.2
 

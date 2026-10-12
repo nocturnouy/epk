@@ -1,6 +1,7 @@
 const heroCanvas = document.getElementById('heroCanvas');
 const heroContext = heroCanvas.getContext('2d');
 const heroVideo = document.createElement('video');
+const heroFallbackImage = new Image();
 heroVideo.muted = true;
 heroVideo.loop = true;
 heroVideo.autoplay = true;
@@ -14,12 +15,13 @@ const maxHeroCanvasHeight = 360;
 // Set from 0 (original color) to 100 (fully grayscale).
 const HERO_GRAYSCALE_PERCENT = 100;
 const heroGrayscaleAmount = Math.min(100, Math.max(0, HERO_GRAYSCALE_PERCENT)) / 100;
+let heroFallbackActive = false;
 
 // Draw each video frame to the canvas and apply its grayscale, grain, and transparency effects.
-function drawHeroVideoFrame() {
+function drawHeroSource(source, sourceWidth, sourceHeight) {
     const width = heroCanvas.clientWidth;
     const height = heroCanvas.clientHeight;
-    if (!width || !height || heroVideo.readyState < HTMLMediaElement.HAVE_CURRENT_DATA) return;
+    if (!width || !height) return;
 
     const scale = Math.min(
         window.devicePixelRatio || 1,
@@ -35,23 +37,23 @@ function drawHeroVideoFrame() {
     }
     heroContext.setTransform(canvasWidth / width, 0, 0, canvasHeight / height, 0, 0);
 
-    const sourceRatio = heroVideo.videoWidth / heroVideo.videoHeight;
+    const imageWidth = sourceWidth;
+    const imageHeight = sourceHeight;
+    const sourceRatio = imageWidth / imageHeight;
     const targetRatio = width / height;
     let sourceX = 0;
     let sourceY = 0;
-    let sourceWidth = heroVideo.videoWidth;
-    let sourceHeight = heroVideo.videoHeight;
 
     if (sourceRatio > targetRatio) {
-        sourceWidth = heroVideo.videoHeight * targetRatio;
-        sourceX = (heroVideo.videoWidth - sourceWidth) / 2;
+        sourceWidth = imageHeight * targetRatio;
+        sourceX = (imageWidth - sourceWidth) / 2;
     } else {
-        sourceHeight = heroVideo.videoWidth / targetRatio;
-        sourceY = (heroVideo.videoHeight - sourceHeight) * 0.45;
+        sourceHeight = imageWidth / targetRatio;
+        sourceY = (imageHeight - sourceHeight) * 0.45;
     }
 
     heroContext.drawImage(
-        heroVideo,
+        source,
         sourceX, sourceY, sourceWidth, sourceHeight,
         0, 0, width, height
     );
@@ -77,6 +79,12 @@ function drawHeroVideoFrame() {
     heroContext.putImageData(imageData, 0, 0);
 }
 
+// Render the current video frame, unless the still-image fallback is active.
+function drawHeroVideoFrame() {
+    if (heroFallbackActive || heroVideo.readyState < HTMLMediaElement.HAVE_CURRENT_DATA) return;
+    drawHeroSource(heroVideo, heroVideo.videoWidth, heroVideo.videoHeight);
+}
+
 // Keep canvas processing synchronized to video frames, with a fallback for older browsers.
 function requestHeroFrame() {
     if (heroFrameRequested || heroVideo.paused || heroVideo.ended) return;
@@ -99,11 +107,22 @@ function requestHeroFrame() {
     }
 }
 
-// Show a visible status message if the hero video cannot load or autoplay.
+// Fall back to the processed local banner image if video loading or playback fails.
 function showHeroVideoError() {
-    const errorMessage = document.getElementById('hero-media-error');
-    errorMessage.textContent = 'HERO VIDEO FAILED TO LOAD';
-    errorMessage.hidden = false;
+    if (heroFallbackActive) return;
+    heroFallbackActive = true;
+    heroVideo.pause();
+    heroVideo.removeAttribute('src');
+    heroVideo.load();
+    heroFallbackImage.onload = function () {
+        drawHeroSource(heroFallbackImage, heroFallbackImage.naturalWidth, heroFallbackImage.naturalHeight);
+    };
+    heroFallbackImage.onerror = function () {
+        const errorMessage = document.getElementById('hero-media-error');
+        errorMessage.textContent = 'HERO VIDEO AND FALLBACK IMAGE FAILED TO LOAD';
+        errorMessage.hidden = false;
+    };
+    heroFallbackImage.src = 'media/hero-banner.jpg';
 }
 
 heroVideo.addEventListener('loadeddata', function () {
@@ -114,7 +133,35 @@ heroVideo.addEventListener('playing', requestHeroFrame);
 heroVideo.addEventListener('error', showHeroVideoError);
 heroVideo.src = 'media/pinterest-video.mp4';
 heroVideo.play().catch(showHeroVideoError);
-window.addEventListener('resize', drawHeroVideoFrame, { passive: true });
+window.addEventListener('resize', function () {
+    if (heroFallbackActive && heroFallbackImage.complete) {
+        drawHeroSource(heroFallbackImage, heroFallbackImage.naturalWidth, heroFallbackImage.naturalHeight);
+    } else {
+        drawHeroVideoFrame();
+    }
+}, { passive: true });
+
+// Load the animated code background only on non-mobile viewports.
+const mobileViewport = window.matchMedia('(max-width: 767px)');
+const backgroundFrame = document.getElementById('background-frame');
+const backgroundSource = backgroundFrame.dataset.src;
+
+function updateBackgroundForViewport() {
+    if (mobileViewport.matches) {
+        backgroundFrame.remove();
+        return;
+    }
+
+    if (!backgroundFrame.isConnected) {
+        document.body.prepend(backgroundFrame);
+    }
+    if (!backgroundFrame.hasAttribute('src')) {
+        backgroundFrame.src = backgroundSource;
+    }
+}
+
+mobileViewport.addEventListener('change', updateBackgroundForViewport);
+updateBackgroundForViewport();
 
 const pressCanvas = document.getElementById('pressCanvas');
 const pressContext = pressCanvas.getContext('2d');
