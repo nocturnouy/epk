@@ -1,67 +1,120 @@
 const heroCanvas = document.getElementById('heroCanvas');
 const heroContext = heroCanvas.getContext('2d');
-const heroImage = new Image();
+const heroVideo = document.createElement('video');
+heroVideo.muted = true;
+heroVideo.loop = true;
+heroVideo.autoplay = true;
+heroVideo.playsInline = true;
+heroVideo.preload = 'auto';
+let heroFrameRequested = false;
+let lastHeroRenderTime = 0;
+const heroRenderInterval = 1000 / 15;
+const maxHeroCanvasWidth = 640;
+const maxHeroCanvasHeight = 360;
+// Set from 0 (original color) to 100 (fully grayscale).
+const HERO_GRAYSCALE_PERCENT = 100;
+const heroGrayscaleAmount = Math.min(100, Math.max(0, HERO_GRAYSCALE_PERCENT)) / 100;
 
-// Draw the hero image to the canvas and apply its grayscale, grain, and transparency effects.
-function drawHeroImage() {
+// Draw each video frame to the canvas and apply its grayscale, grain, and transparency effects.
+function drawHeroVideoFrame() {
     const width = heroCanvas.clientWidth;
     const height = heroCanvas.clientHeight;
-    if (!width || !height || !heroImage.complete) return;
+    if (!width || !height || heroVideo.readyState < HTMLMediaElement.HAVE_CURRENT_DATA) return;
 
-    const pixelRatio = window.devicePixelRatio || 1;
-    heroCanvas.width = Math.round(width * pixelRatio);
-    heroCanvas.height = Math.round(height * pixelRatio);
-    heroContext.setTransform(pixelRatio, 0, 0, pixelRatio, 0, 0);
+    const scale = Math.min(
+        window.devicePixelRatio || 1,
+        1,
+        maxHeroCanvasWidth / width,
+        maxHeroCanvasHeight / height
+    );
+    const canvasWidth = Math.max(1, Math.round(width * scale));
+    const canvasHeight = Math.max(1, Math.round(height * scale));
+    if (heroCanvas.width !== canvasWidth || heroCanvas.height !== canvasHeight) {
+        heroCanvas.width = canvasWidth;
+        heroCanvas.height = canvasHeight;
+    }
+    heroContext.setTransform(canvasWidth / width, 0, 0, canvasHeight / height, 0, 0);
 
-    const sourceRatio = heroImage.naturalWidth / heroImage.naturalHeight;
+    const sourceRatio = heroVideo.videoWidth / heroVideo.videoHeight;
     const targetRatio = width / height;
     let sourceX = 0;
     let sourceY = 0;
-    let sourceWidth = heroImage.naturalWidth;
-    let sourceHeight = heroImage.naturalHeight;
+    let sourceWidth = heroVideo.videoWidth;
+    let sourceHeight = heroVideo.videoHeight;
 
     if (sourceRatio > targetRatio) {
-        sourceWidth = heroImage.naturalHeight * targetRatio;
-        sourceX = (heroImage.naturalWidth - sourceWidth) / 2;
+        sourceWidth = heroVideo.videoHeight * targetRatio;
+        sourceX = (heroVideo.videoWidth - sourceWidth) / 2;
     } else {
-        sourceHeight = heroImage.naturalWidth / targetRatio;
-        sourceY = (heroImage.naturalHeight - sourceHeight) * 0.45;
+        sourceHeight = heroVideo.videoWidth / targetRatio;
+        sourceY = (heroVideo.videoHeight - sourceHeight) * 0.45;
     }
 
     heroContext.drawImage(
-        heroImage,
+        heroVideo,
         sourceX, sourceY, sourceWidth, sourceHeight,
         0, 0, width, height
     );
 
-    const imageData = heroContext.getImageData(0, 0, heroCanvas.width, heroCanvas.height);
+    const imageData = heroContext.getImageData(0, 0, canvasWidth, canvasHeight);
     const pixels = imageData.data;
 
     for (let index = 0; index < pixels.length; index += 4) {
-        let gray = (pixels[index] + pixels[index + 1] + pixels[index + 2]) / 3;
+        const red = pixels[index];
+        const green = pixels[index + 1];
+        const blue = pixels[index + 2];
+        let gray = (red + green + blue) / 3;
         gray = gray < 100 ? gray * 0.8 : gray * 1.2;
 
         const noise = (Math.random() - 0.5) * 40;
-        const value = Math.min(255, Math.max(0, gray + noise));
         const opacity = Math.min(1, Math.max(0, (gray - 35) / 100));
-        pixels[index] = value;
-        pixels[index + 1] = value;
-        pixels[index + 2] = value;
+        pixels[index] = Math.min(255, Math.max(0, red + (gray - red) * heroGrayscaleAmount + noise));
+        pixels[index + 1] = Math.min(255, Math.max(0, green + (gray - green) * heroGrayscaleAmount + noise));
+        pixels[index + 2] = Math.min(255, Math.max(0, blue + (gray - blue) * heroGrayscaleAmount + noise));
         pixels[index + 3] *= opacity;
     }
 
     heroContext.putImageData(imageData, 0, 0);
 }
 
-heroImage.onload = drawHeroImage;
-// Show a visible status message if the hero image cannot be loaded.
-heroImage.onerror = function () {
-    const errorMessage = document.getElementById('hero-image-error');
-    errorMessage.textContent = 'HERO IMAGE FAILED TO LOAD';
+// Keep canvas processing synchronized to video frames, with a fallback for older browsers.
+function requestHeroFrame() {
+    if (heroFrameRequested || heroVideo.paused || heroVideo.ended) return;
+    heroFrameRequested = true;
+
+    const renderFrame = function () {
+        heroFrameRequested = false;
+        const now = performance.now();
+        if (now - lastHeroRenderTime >= heroRenderInterval) {
+            drawHeroVideoFrame();
+            lastHeroRenderTime = now;
+        }
+        requestHeroFrame();
+    };
+
+    if (typeof heroVideo.requestVideoFrameCallback === 'function') {
+        heroVideo.requestVideoFrameCallback(renderFrame);
+    } else {
+        window.requestAnimationFrame(renderFrame);
+    }
+}
+
+// Show a visible status message if the hero video cannot load or autoplay.
+function showHeroVideoError() {
+    const errorMessage = document.getElementById('hero-media-error');
+    errorMessage.textContent = 'HERO VIDEO FAILED TO LOAD';
     errorMessage.hidden = false;
-};
-heroImage.src = 'media/hero-banner.jpg';
-window.addEventListener('resize', drawHeroImage, { passive: true });
+}
+
+heroVideo.addEventListener('loadeddata', function () {
+    drawHeroVideoFrame();
+    requestHeroFrame();
+});
+heroVideo.addEventListener('playing', requestHeroFrame);
+heroVideo.addEventListener('error', showHeroVideoError);
+heroVideo.src = 'media/pinterest-video.mp4';
+heroVideo.play().catch(showHeroVideoError);
+window.addEventListener('resize', drawHeroVideoFrame, { passive: true });
 
 const pressCanvas = document.getElementById('pressCanvas');
 const pressContext = pressCanvas.getContext('2d');

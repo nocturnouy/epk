@@ -9,8 +9,9 @@ and an animated code-themed background.
 
 - Responsive two-column EPK layout that adapts to smaller screens.
 - Animated code background displayed behind the page content.
-- Hero banner drawn in a canvas with grayscale, contrast, grain, and
-  brightness-based transparency effects.
+- Hero video drawn in a canvas with grayscale, contrast, grain, and
+  brightness-based transparency effects, processed at up to 15 frames per
+  second and capped at 640 × 360 pixels for mobile performance.
 - Press photo drawn into a canvas with grayscale and contrast filtering.
 - System clock showing the viewer's local time.
 - Latest repository commit date fetched from the GitHub API and displayed in
@@ -26,7 +27,7 @@ and an animated code-themed background.
 | `fu3ga.css` | Page styling, responsive layout, and background layering |
 | `fu3ga.js` | Canvas image processing, system clock, and GitHub update lookup |
 | `background.html` | Animated code background rendered in the page iframe |
-| `media/hero-banner.jpg` | Local source image for the canvas hero banner |
+| `media/pinterest-video.mp4` | Local source video for the canvas hero banner |
 | `media/press-photo.jpg` | Local source image for the press-photo canvas |
 
 
@@ -44,6 +45,15 @@ Before publishing, complete or verify these items in `fu3ga.html`:
   Resident Advisor profile URLs.
 
 ## Changelog
+
+### 0.0.3
+
+- Replaced the static hero-banner image with a looping local video rendered
+  frame-by-frame through canvas.
+- Preserved the hero's grayscale blend, contrast, grain, and transparent dark
+  pixels, with a configurable 0–100 grayscale setting.
+- Limited video canvas processing to 15 frames per second and a maximum
+  640 × 360 canvas size for improved mobile performance.
 
 ### 0.0.2
 
