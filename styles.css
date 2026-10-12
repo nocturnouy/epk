@@ -7,7 +7,7 @@
     --border-color: #262930;
     --text-main: #e2e8f0;
     --text-muted: #8a94a6;
-    --accent-pink: #ff0077;
+    --accent-pink: #ea00ff;
     --accent-red: #ff3344;
     --font-mono: 'Share Tech Mono', monospace;
     --font-sans: 'Inter', sans-serif;
@@ -40,7 +40,7 @@ body {
         background-size: 100% 4px;
         z-index: 999;
         pointer-events: none;
-        opacity: 0.4;
+        opacity: 0.3;
     }
 }
 
@@ -298,21 +298,48 @@ header {
     border: 1px solid var(--border-color);
 }
 
-.sound-embed {
+.coming-soon-card {
+    position: relative;
     width: 100%;
     min-height: 166px;
-    background: #000;
-    border: 1px solid var(--border-color);
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    padding: 24px;
+    background:
+        linear-gradient(135deg, rgba(234, 0, 255, 0.08), transparent 58%),
+        #09090c;
+    border: 1px dashed var(--accent-pink);
     margin-bottom: 15px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 8px;
+
+    &::after {
+        content: "[ TRANSMISSION_PENDING ]";
+        position: absolute;
+        right: 10px;
+        bottom: 8px;
+        color: var(--text-muted);
+        font: 10px var(--font-mono);
+        opacity: 0.65;
+    }
+
+    h3 {
+        color: var(--text-main);
+        font: 16px var(--font-mono);
+        letter-spacing: 0.04em;
+    }
+
+    p {
+        max-width: 38ch;
+        color: var(--text-muted);
+        font-size: 13px;
+    }
 }
 
-.sound-embed-label {
-    font-family: var(--font-mono);
-    color: var(--text-muted);
-    font-size: 12px;
+.coming-soon-status {
+    color: var(--accent-pink);
+    font: 11px var(--font-mono);
+    letter-spacing: 0.12em;
 }
 
 /* Gigs & Tables */
@@ -374,6 +401,20 @@ header {
     &:hover {
         background: var(--accent-pink);
         color: #000;
+        text-decoration: none;
+    }
+}
+
+.btn-coming-soon {
+    color: var(--text-muted);
+    border-color: var(--border-color);
+    border-style: dashed;
+    cursor: not-allowed;
+    opacity: 0.75;
+
+    &:hover {
+        background: transparent;
+        color: var(--text-muted);
         text-decoration: none;
     }
 }

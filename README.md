@@ -1,9 +1,9 @@
 # Santisima Fu3ga Electronic Press Kit
 
 A static electronic press kit (EPK) for Santisima Fu3ga, designed as a dark,
-terminal-inspired artist page. It includes artist information, music links,
-selected gigs, press imagery, a technical rider, booking contact information,
-and an animated code-themed background.
+terminal-inspired artist page. It includes artist information, a Mixcloud
+archive link, selected gigs, press imagery, a technical rider, booking contact
+information, and an animated code-themed background.
 
 ## Features
 
@@ -15,6 +15,7 @@ and an animated code-themed background.
 - Falls back to the locally processed hero image if video playback fails.
 - Does not load the animated code-background iframe on mobile viewports.
 - Press photo drawn into a canvas with grayscale and contrast filtering.
+- Links to the artist's Mixcloud archive, Instagram, and booking email.
 - System clock showing the viewer's local time.
 - Latest repository commit date fetched from the GitHub API and displayed in
   UTC. If the request fails, the status displays `SYS_UPDATE: OFFLINE`.
@@ -29,24 +30,26 @@ and an animated code-themed background.
 | `styles.css` | Page styling, responsive layout, and background layering |
 | `scripts.js` | Canvas image processing, system clock, and GitHub update lookup |
 | `background.html` | Animated code background rendered in the page iframe |
-| `media/pinterest-video.mp4` | Local source video for the canvas hero banner |
-| `media/press-photo.jpg` | Local source image for the press-photo canvas |
+| `media/video-hero.mp4` | Local source video for the canvas hero banner |
+| `media/hero-banner.jpg` | Still-image fallback for the canvas hero banner |
+| `media/bio_photo.jpg` | Local source image for the press-photo canvas |
 
 
 ## Pending
 
-Before publishing, complete or verify these items in `index.html`:
-
-- Replace both placeholder biography paragraphs with the final artist bio.
-- Add the real SoundCloud player embed and link to the artist's profile.
-- Replace the sample gig entries with confirmed events, venues, dates, and
-  locations; remove any unconfirmed listings.
-- Link the press-kit download button to the actual downloadable press-kit file.
-- Replace `booking@yourdomain.com` with the active booking email address.
-- Replace the `#` social links with the artist's Instagram, SoundCloud, and
-  Resident Advisor profile URLs.
+- Add the downloadable press-kit ZIP or PDF and link the press-kit download
+  button in `index.html` to it.
 
 ## Changelog
+
+### 0.0.4
+
+- Added the current hero video, fallback banner image, and press photo to the
+  local `media/` assets.
+- Updated the artist biography, selected gigs, and technical rider information.
+- Linked the recorded-sets section to the artist's Mixcloud archive.
+- Updated booking contact and social profile links.
+- Updated the displayed page version to `0.0.4`.
 
 ### 0.0.3
 

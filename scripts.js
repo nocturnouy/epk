@@ -9,7 +9,7 @@ heroVideo.playsInline = true;
 heroVideo.preload = 'auto';
 let heroFrameRequested = false;
 let lastHeroRenderTime = 0;
-const heroRenderInterval = 1000 / 15;
+const heroRenderInterval = 1000 / 15; // Target 30 frames per second.
 const maxHeroCanvasWidth = 640;
 const maxHeroCanvasHeight = 360;
 // Set from 0 (original color) to 100 (fully grayscale).
@@ -65,8 +65,8 @@ function drawHeroSource(source, sourceWidth, sourceHeight) {
         const red = pixels[index];
         const green = pixels[index + 1];
         const blue = pixels[index + 2];
-        let gray = (red + green + blue) / 3;
-        gray = gray < 100 ? gray * 0.8 : gray * 1.2;
+        let gray = (red + green + blue) / 2;
+        gray = gray < 100 ? gray * 0.7 : gray * 1.2;
 
         const noise = (Math.random() - 0.5) * 40;
         const opacity = Math.min(1, Math.max(0, (gray - 35) / 100));
@@ -131,7 +131,7 @@ heroVideo.addEventListener('loadeddata', function () {
 });
 heroVideo.addEventListener('playing', requestHeroFrame);
 heroVideo.addEventListener('error', showHeroVideoError);
-heroVideo.src = 'media/pinterest-video.mp4';
+heroVideo.src = 'media/video-hero.mp4';
 heroVideo.play().catch(showHeroVideoError);
 window.addEventListener('resize', function () {
     if (heroFallbackActive && heroFallbackImage.complete) {
@@ -171,7 +171,7 @@ const pressImage = new Image();
 pressImage.onload = function () {
     pressCanvas.width = pressImage.naturalWidth;
     pressCanvas.height = pressImage.naturalHeight;
-    pressContext.filter = 'grayscale(1) contrast(1.2)';
+    pressContext.filter = 'grayscale(0.8) contrast(1.1) brightness(1.5)';
     pressContext.drawImage(pressImage, 0, 0);
 };
 
@@ -182,7 +182,7 @@ pressImage.onerror = function () {
     errorMessage.hidden = false;
 };
 
-pressImage.src = 'media/press-photo.jpg';
+pressImage.src = 'media/bio_photo.jpg';
 
 // Refresh the displayed system clock using the viewer's local time.
 function updateClock() {
