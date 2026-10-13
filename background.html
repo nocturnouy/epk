@@ -3,7 +3,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<title>Background Frame</title>
+	<title>Scrolling Python Code Background</title>
 	<style>
 		* {
 			box-sizing: border-box;
@@ -14,205 +14,268 @@
 			height: 100dvh;
 			margin: 0;
 			overflow: hidden;
-			color: #d6deeb;
-			background: radial-gradient(ellipse at 50% 0, #292929, #111 65%, #080808);
-			font: 14px/1.7 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+			background:
+				radial-gradient(ellipse at 50% 0, #141619, #0a0b0d 65%, #0a0b0d);
+			color: #c8c8c8;
+			font: 14px/1.8 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
 		}
 
 		.code-window {
-			width: 100%;
-			height: 100vh;
-			height: 100dvh;
-			overflow: auto;
+			position: absolute;
+			inset: 0;
+			overflow: hidden;
 			padding: clamp(18px, 3vw, 40px);
-			overscroll-behavior: contain;
-			font-size: clamp(13px, 1.15vw, 17px);
-			filter: blur(1px) contrast(0.5) brightness(10);
-			text-shadow: 0 3px 2px #fff, 0 5px 5px #fff, 0 10px 10px #fff, 0 20px 20px #fff, 0 40px 40px #fff;
+			mask-image: linear-gradient(to bottom, transparent, #000 12%, #000 88%, transparent);
+		}
+
+		.code-track {
+			animation: scroll-code 15s linear infinite;
+			will-change: transform;
 		}
 
 		pre {
+			width: max-content;
+			min-width: 100%;
 			margin: 0;
 			white-space: pre;
+			font: inherit;
+			letter-spacing: 0.015em;
 		}
 
-		#code { color: #dedede; }
+		.comment { color: #777; }
+		.keyword { color: #d0d0d0; }
+		.function { color: #b8b8b8; }
+		.string { color: #a0a0a0; }
+		.number { color: #e0e0e0; }
+		.name { color: #c4c4c4; }
 
-		.cursor {
-			display: inline-block;
-			width: 8px;
-			height: 1.15em;
-			margin-left: 2px;
-			vertical-align: -3px;
-			background: #dedede;
-			box-shadow: 0 0 5px #fff8;
-			animation: blink 1s steps(2, start) infinite;
-		}
-
-		.keyword { color: #eee; }
-		.function { color: #ccc; }
-		.string { color: #d8d8d8; }
-		.comment { color: #888; }
-		.number { color: #aaa; }
-
-		@keyframes blink {
-			to { visibility: hidden; }
+		@keyframes scroll-code {
+			to { transform: translateY(-50%); }
 		}
 
 		@media (max-width: 520px) {
 			.code-window {
 				padding: 18px 14px;
+			}
+
+			pre {
 				font-size: 12px;
 			}
 		}
 
 		@media (prefers-reduced-motion: reduce) {
-			.cursor { animation: none; }
+			.code-track {
+				animation-duration: 60s;
+			}
 		}
 	</style>
 </head>
 <body>
-	<main class="code-window" aria-label="Animated code background"><pre><code id="code"></code><span class="cursor" aria-hidden="true"></span></pre></main>
-	<script>
-		const source = `// Build a tiny night sky, one star at a time
-const canvas = document.querySelector("#sky");
-const context = canvas.getContext("2d");
-const stars = [];
-const colors = ["#fff4c2", "#b8d7ff", "#ffc7df"];
-const settings = {
-	count: 180,
-	speed: 0.18,
-	twinkle: 0.025,
-	background: "#080b14"
-};
+	<main class="code-window" aria-label="Scrolling Python code background">
+		<div class="code-track">
+			<pre aria-hidden="true"><code><span class="comment"># Build a little signal from the noise</span>
+<span class="keyword">from</span> collections <span class="keyword">import</span> deque
+<span class="keyword">from</span> dataclasses <span class="keyword">import</span> dataclass
+<span class="keyword">from</span> time <span class="keyword">import</span> monotonic
 
-function randomBetween(min, max) {
-	return Math.random() * (max - min) + min;
-}
+<span class="name">SAMPLE_RATE</span> = <span class="number">48_000</span>
+<span class="name">BUFFER_SIZE</span> = <span class="number">1_024</span>
+<span class="name">FADE_SECONDS</span> = <span class="number">4.5</span>
 
-function makeStar(width, height) {
-	return {
-		x: randomBetween(0, width),
-		y: randomBetween(0, height),
-		radius: randomBetween(0.4, 1.8),
-		phase: randomBetween(0, Math.PI * 2),
-		color: colors[Math.floor(Math.random() * colors.length)]
-	};
-}
+<span class="keyword">@dataclass</span>
+<span class="keyword">class</span> <span class="function">Signal</span>:
+    frequency: <span class="name">float</span>
+    amplitude: <span class="name">float</span> = <span class="number">0.0</span>
+    active: <span class="name">bool</span> = <span class="keyword">True</span>
 
-function resizeCanvas() {
-	const scale = window.devicePixelRatio || 1;
-	const { innerWidth: width, innerHeight: height } = window;
+    <span class="keyword">def</span> <span class="function">fade_in</span>(<span class="name">self</span>, duration: <span class="name">float</span>) -&gt; <span class="name">None</span>:
+        started = <span class="function">monotonic</span>()
+        <span class="keyword">while</span> <span class="function">monotonic</span>() - started &lt; duration:
+            elapsed = <span class="function">monotonic</span>() - started
+            <span class="name">self</span>.amplitude = <span class="function">min</span>(elapsed / duration, <span class="number">1.0</span>)
+            <span class="keyword">yield</span> <span class="name">self</span>.amplitude
+        <span class="name">self</span>.amplitude = <span class="number">1.0</span>
 
-	canvas.width = width * scale;
-	canvas.height = height * scale;
-	canvas.style.width = width + "px";
-	canvas.style.height = height + "px";
-	context.setTransform(scale, 0, 0, scale, 0, 0);
 
-	stars.length = 0;
-	for (let index = 0; index < settings.count; index++) {
-		stars.push(makeStar(width, height));
-	}
-}
+<span class="keyword">def</span> <span class="function">make_pattern</span>(steps: <span class="name">int</span>) -&gt; <span class="name">list</span>[<span class="name">float</span>]:
+    <span class="comment">"""Return a slow, shifting rhythmic pattern."""</span>
+    sequence = [<span class="number">0.0</span>] * steps
+    accents = (<span class="number">0</span>, <span class="number">5</span>, <span class="number">8</span>, <span class="number">13</span>)
 
-function paintBackground(width, height) {
-	const night = context.createLinearGradient(0, 0, 0, height);
-	night.addColorStop(0, "#17233b");
-	night.addColorStop(0.55, settings.background);
-	night.addColorStop(1, "#11101f");
-	context.fillStyle = night;
-	context.fillRect(0, 0, width, height);
-}
+    <span class="keyword">for</span> beat <span class="keyword">in</span> accents:
+        <span class="keyword">if</span> beat &lt; steps:
+            sequence[beat] = <span class="number">1.0</span>
 
-function drawStar(star, time) {
-	const shimmer = 0.45 + Math.sin(time * settings.twinkle + star.phase) * 0.35;
-	context.globalAlpha = shimmer;
-	context.fillStyle = star.color;
-	context.beginPath();
-	context.arc(star.x, star.y, star.radius, 0, Math.PI * 2);
-	context.fill();
-}
+    <span class="keyword">return</span> sequence
 
-function drawMoon(width, height) {
-	const x = width * 0.78;
-	const y = height * 0.24;
-	const glow = context.createRadialGradient(x, y, 8, x, y, 90);
-	glow.addColorStop(0, "#fff2c455");
-	glow.addColorStop(1, "#fff2c400");
 
-	context.fillStyle = glow;
-	context.fillRect(x - 90, y - 90, 180, 180);
-	context.globalAlpha = 1;
-	context.fillStyle = "#fff2c4";
-	context.beginPath();
-	context.arc(x, y, 22, 0, Math.PI * 2);
-	context.fill();
-}
+<span class="keyword">class</span> <span class="function">Archive</span>:
+    <span class="keyword">def</span> <span class="function">__init__</span>(<span class="name">self</span>, capacity: <span class="name">int</span> = <span class="number">256</span>) -&gt; <span class="name">None</span>:
+        <span class="name">self</span>.events = <span class="function">deque</span>(maxlen=capacity)
+        <span class="name">self</span>.opened_at = <span class="function">monotonic</span>()
 
-function animate(time = 0) {
-	const width = window.innerWidth;
-	const height = window.innerHeight;
+    <span class="keyword">def</span> <span class="function">record</span>(<span class="name">self</span>, event: <span class="name">str</span>) -&gt; <span class="name">None</span>:
+        timestamp = <span class="function">monotonic</span>() - <span class="name">self</span>.opened_at
+        <span class="name">self</span>.events.append((timestamp, event))
 
-	paintBackground(width, height);
-	drawMoon(width, height);
-	for (const star of stars) {
-		star.y += settings.speed * 0.01;
-		if (star.y > height) star.y = 0;
-		drawStar(star, time);
-	}
+    <span class="keyword">def</span> <span class="function">latest</span>(<span class="name">self</span>, count: <span class="name">int</span> = <span class="number">8</span>) -&gt; <span class="name">list</span>:
+        <span class="keyword">return</span> <span class="function">list</span>(<span class="name">self</span>.events)[-count:]
 
-	context.globalAlpha = 1;
-	window.requestAnimationFrame(animate);
-}
 
-window.addEventListener("resize", resizeCanvas, { passive: true });
-resizeCanvas();
-animate();
+<span class="keyword">def</span> <span class="function">normalize</span>(samples: <span class="name">list</span>[<span class="name">float</span>]) -&gt; <span class="name">list</span>[<span class="name">float</span>]:
+    peak = <span class="function">max</span>((<span class="function">abs</span>(sample) <span class="keyword">for</span> sample <span class="keyword">in</span> samples), default=<span class="number">0.0</span>)
+    <span class="keyword">if</span> peak == <span class="number">0.0</span>:
+        <span class="keyword">return</span> samples
+    <span class="keyword">return</span> [sample / peak <span class="keyword">for</span> sample <span class="keyword">in</span> samples]
 
-console.log("Somewhere, a little constellation wakes up.");`;
 
-		const output = document.getElementById("code");
-		const codeWindow = document.querySelector(".code-window");
-		let position = 0;
-		let generated = "";
+<span class="keyword">def</span> <span class="function">smooth</span>(values: <span class="name">list</span>[<span class="name">float</span>], width: <span class="name">int</span> = <span class="number">5</span>) -&gt; <span class="name">list</span>[<span class="name">float</span>]:
+    radius = <span class="function">max</span>(<span class="number">1</span>, width // <span class="number">2</span>)
+    result = []
 
-		function highlighted(text) {
-			const escaped = text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
-			return escaped.replace(/(\/\/[^\n]*|"[^"\n]*"|'[^'\n]*'|\b(?:async|function|const|for|of|await|return|new|then)\b|\b\d+\b|\b(?:sleep|resolve|setTimeout|document|querySelectorAll|Promise|setProperty|classList|add|entries|console|log)\b)/g, token => {
-				let kind = "function";
-				if (token.startsWith("//")) kind = "comment";
-				else if (token.startsWith('"') || token.startsWith("'")) kind = "string";
-				else if (/^\d+$/.test(token)) kind = "number";
-				else if (/^(async|function|const|for|of|await|return|new|then)$/.test(token)) kind = "keyword";
-				return `<span class="${kind}">${token}</span>`;
-			});
-		}
+    <span class="keyword">for</span> index, value <span class="keyword">in</span> <span class="function">enumerate</span>(values):
+        start = <span class="function">max</span>(<span class="number">0</span>, index - radius)
+        stop = <span class="function">min</span>(<span class="function">len</span>(values), index + radius + <span class="number">1</span>)
+        window = values[start:stop]
+        result.append(<span class="function">sum</span>(window) / <span class="function">len</span>(window))
 
-		function typeNext() {
-			if (position >= source.length) {
-				generated += "\n\n";
-				position = 0;
-			}
-			const start = position;
-			let typed = 0;
-			while (position < source.length && typed < 16) {
-				const char = source[position++];
-				typed++;
-				if (char === "\n" || /[{}();,]/.test(char)) break;
-			}
-			generated += source.slice(start, position);
-			if (generated.length > 16000) {
-				const trimAt = generated.indexOf("\n", generated.length - 12000);
-				if (trimAt !== -1) generated = generated.slice(trimAt + 1);
-			}
-			output.innerHTML = highlighted(generated);
-			codeWindow.scrollTop = codeWindow.scrollHeight;
-			const lastChar = source[position - 1];
-			window.setTimeout(typeNext, lastChar === "\n" ? 30 : /[{}();,]/.test(lastChar) ? 8 : 3);
-		}
+    <span class="keyword">return</span> result
 
-		typeNext();
-	</script>
+
+<span class="keyword">def</span> <span class="function">render_frame</span>(levels: <span class="name">list</span>[<span class="name">float</span>], width: <span class="name">int</span>) -&gt; <span class="name">str</span>:
+    glyphs = <span class="string">" .:-=+*#%@"</span>
+    frame = []
+
+    <span class="keyword">for</span> offset <span class="keyword">in</span> <span class="function">range</span>(<span class="number">0</span>, <span class="function">len</span>(levels), width):
+        row = levels[offset:offset + width]
+        line = <span class="string">""</span>.join(
+            glyphs[<span class="function">min</span>(<span class="function">len</span>(glyphs) - <span class="number">1</span>, <span class="function">int</span>(level * <span class="function">len</span>(glyphs)))]
+            <span class="keyword">for</span> level <span class="keyword">in</span> row
+        )
+        frame.append(line)
+
+    <span class="keyword">return</span> <span class="string">"\n"</span>.join(frame)
+
+
+<span class="keyword">def</span> <span class="function">main</span>() -&gt; <span class="name">None</span>:
+    archive = <span class="function">Archive</span>()
+    pattern = <span class="function">make_pattern</span>(<span class="number">16</span>)
+
+    <span class="keyword">for</span> step, accent <span class="keyword">in</span> <span class="function">enumerate</span>(pattern):
+        <span class="keyword">if</span> accent:
+            archive.record(<span class="string">f"beat:{step}"</span>)
+
+    <span class="keyword">for</span> timestamp, event <span class="keyword">in</span> archive.latest():
+        <span class="function">print</span>(<span class="string">f"{timestamp:07.3f}s  {event}"</span>)
+
+
+<span class="keyword">if</span> <span class="name">__name__</span> == <span class="string">"__main__"</span>:
+    <span class="function">main</span>()
+
+<span class="comment"># Keep the rhythm moving; leave room for the next idea.</span>
+</code></pre>
+			<pre aria-hidden="true"><code><span class="comment"># Build a little signal from the noise</span>
+<span class="keyword">from</span> collections <span class="keyword">import</span> deque
+<span class="keyword">from</span> dataclasses <span class="keyword">import</span> dataclass
+<span class="keyword">from</span> time <span class="keyword">import</span> monotonic
+
+<span class="name">SAMPLE_RATE</span> = <span class="number">48_000</span>
+<span class="name">BUFFER_SIZE</span> = <span class="number">1_024</span>
+<span class="name">FADE_SECONDS</span> = <span class="number">4.5</span>
+
+<span class="keyword">@dataclass</span>
+<span class="keyword">class</span> <span class="function">Signal</span>:
+    frequency: <span class="name">float</span>
+    amplitude: <span class="name">float</span> = <span class="number">0.0</span>
+    active: <span class="name">bool</span> = <span class="keyword">True</span>
+
+    <span class="keyword">def</span> <span class="function">fade_in</span>(<span class="name">self</span>, duration: <span class="name">float</span>) -&gt; <span class="name">None</span>:
+        started = <span class="function">monotonic</span>()
+        <span class="keyword">while</span> <span class="function">monotonic</span>() - started &lt; duration:
+            elapsed = <span class="function">monotonic</span>() - started
+            <span class="name">self</span>.amplitude = <span class="function">min</span>(elapsed / duration, <span class="number">1.0</span>)
+            <span class="keyword">yield</span> <span class="name">self</span>.amplitude
+        <span class="name">self</span>.amplitude = <span class="number">1.0</span>
+
+
+<span class="keyword">def</span> <span class="function">make_pattern</span>(steps: <span class="name">int</span>) -&gt; <span class="name">list</span>[<span class="name">float</span>]:
+    <span class="comment">"""Return a slow, shifting rhythmic pattern."""</span>
+    sequence = [<span class="number">0.0</span>] * steps
+    accents = (<span class="number">0</span>, <span class="number">5</span>, <span class="number">8</span>, <span class="number">13</span>)
+
+    <span class="keyword">for</span> beat <span class="keyword">in</span> accents:
+        <span class="keyword">if</span> beat &lt; steps:
+            sequence[beat] = <span class="number">1.0</span>
+
+    <span class="keyword">return</span> sequence
+
+
+<span class="keyword">class</span> <span class="function">Archive</span>:
+    <span class="keyword">def</span> <span class="function">__init__</span>(<span class="name">self</span>, capacity: <span class="name">int</span> = <span class="number">256</span>) -&gt; <span class="name">None</span>:
+        <span class="name">self</span>.events = <span class="function">deque</span>(maxlen=capacity)
+        <span class="name">self</span>.opened_at = <span class="function">monotonic</span>()
+
+    <span class="keyword">def</span> <span class="function">record</span>(<span class="name">self</span>, event: <span class="name">str</span>) -&gt; <span class="name">None</span>:
+        timestamp = <span class="function">monotonic</span>() - <span class="name">self</span>.opened_at
+        <span class="name">self</span>.events.append((timestamp, event))
+
+    <span class="keyword">def</span> <span class="function">latest</span>(<span class="name">self</span>, count: <span class="name">int</span> = <span class="number">8</span>) -&gt; <span class="name">list</span>:
+        <span class="keyword">return</span> <span class="function">list</span>(<span class="name">self</span>.events)[-count:]
+
+
+<span class="keyword">def</span> <span class="function">normalize</span>(samples: <span class="name">list</span>[<span class="name">float</span>]) -&gt; <span class="name">list</span>[<span class="name">float</span>]:
+    peak = <span class="function">max</span>((<span class="function">abs</span>(sample) <span class="keyword">for</span> sample <span class="keyword">in</span> samples), default=<span class="number">0.0</span>)
+    <span class="keyword">if</span> peak == <span class="number">0.0</span>:
+        <span class="keyword">return</span> samples
+    <span class="keyword">return</span> [sample / peak <span class="keyword">for</span> sample <span class="keyword">in</span> samples]
+
+
+<span class="keyword">def</span> <span class="function">smooth</span>(values: <span class="name">list</span>[<span class="name">float</span>], width: <span class="name">int</span> = <span class="number">5</span>) -&gt; <span class="name">list</span>[<span class="name">float</span>]:
+    radius = <span class="function">max</span>(<span class="number">1</span>, width // <span class="number">2</span>)
+    result = []
+
+    <span class="keyword">for</span> index, value <span class="keyword">in</span> <span class="function">enumerate</span>(values):
+        start = <span class="function">max</span>(<span class="number">0</span>, index - radius)
+        stop = <span class="function">min</span>(<span class="function">len</span>(values), index + radius + <span class="number">1</span>)
+        window = values[start:stop]
+        result.append(<span class="function">sum</span>(window) / <span class="function">len</span>(window))
+
+    <span class="keyword">return</span> result
+
+
+<span class="keyword">def</span> <span class="function">render_frame</span>(levels: <span class="name">list</span>[<span class="name">float</span>], width: <span class="name">int</span>) -&gt; <span class="name">str</span>:
+    glyphs = <span class="string">" .:-=+*#%@"</span>
+    frame = []
+
+    <span class="keyword">for</span> offset <span class="keyword">in</span> <span class="function">range</span>(<span class="number">0</span>, <span class="function">len</span>(levels), width):
+        row = levels[offset:offset + width]
+        line = <span class="string">""</span>.join(
+            glyphs[<span class="function">min</span>(<span class="function">len</span>(glyphs) - <span class="number">1</span>, <span class="function">int</span>(level * <span class="function">len</span>(glyphs)))]
+            <span class="keyword">for</span> level <span class="keyword">in</span> row
+        )
+        frame.append(line)
+
+    <span class="keyword">return</span> <span class="string">"\n"</span>.join(frame)
+
+
+<span class="keyword">def</span> <span class="function">main</span>() -&gt; <span class="name">None</span>:
+    archive = <span class="function">Archive</span>()
+    pattern = <span class="function">make_pattern</span>(<span class="number">16</span>)
+
+    <span class="keyword">for</span> step, accent <span class="keyword">in</span> <span class="function">enumerate</span>(pattern):
+        <span class="keyword">if</span> accent:
+            archive.record(<span class="string">f"beat:{step}"</span>)
+
+    <span class="keyword">for</span> timestamp, event <span class="keyword">in</span> archive.latest():
+        <span class="function">print</span>(<span class="string">f"{timestamp:07.3f}s  {event}"</span>)
+
+
+<span class="keyword">if</span> <span class="name">__name__</span> == <span class="string">"__main__"</span>:
+    <span class="function">main</span>()
+
+<span class="comment"># Keep the rhythm moving; leave room for the next idea.</span>
+</code></pre>
+		</div>
+	</main>
 </body>
 </html>

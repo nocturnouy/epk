@@ -8,10 +8,13 @@ information, and an animated code-themed background.
 ## Features
 
 - Responsive two-column EPK layout that adapts to smaller screens.
-- Animated code background displayed behind the page content.
+- Monochrome Python code background scrolls using a lightweight CSS animation,
+  with no JavaScript animation loop or repeated DOM updates.
 - Hero video drawn in a canvas with grayscale, contrast, grain, and
   brightness-based transparency effects, processed at up to 15 frames per
   second and capped at 640 × 360 pixels for mobile performance.
+- Hero video playback frame rate is reported to the browser console for
+  performance monitoring.
 - Falls back to the locally processed hero image if video playback fails.
 - Does not load the animated code-background iframe on mobile viewports.
 - Press photo drawn into a canvas with grayscale and contrast filtering.
@@ -28,7 +31,7 @@ information, and an animated code-themed background.
 | --- | --- |
 | `index.html` | Main press kit page and content markup; GitHub Pages entry point |
 | `styles.css` | Page styling, responsive layout, and background layering |
-| `scripts.js` | Canvas image processing, system clock, and GitHub update lookup |
+| `scripts.js` | Canvas image processing, video FPS logging, system clock, and GitHub update lookup |
 | `background.html` | Animated code background rendered in the page iframe |
 | `media/video-hero.mp4` | Local source video for the canvas hero banner |
 | `media/hero-banner.jpg` | Still-image fallback for the canvas hero banner |
@@ -41,6 +44,16 @@ information, and an animated code-themed background.
   button in `index.html` to it.
 
 ## Changelog
+
+### 0.0.5
+
+- Replaced the animated background's repeated JavaScript text generation and
+  highlighting with static monochrome Python code and a CSS-only scrolling
+  animation.
+- Added periodic hero-video FPS logging to help identify playback performance
+  issues on different devices.
+- Set the hero banner height to 70% of the viewport.
+- Updated the displayed page version to `0.0.5`.
 
 ### 0.0.4
 

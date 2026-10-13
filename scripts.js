@@ -9,6 +9,9 @@ heroVideo.playsInline = true;
 heroVideo.preload = 'auto';
 let heroFrameRequested = false;
 let lastHeroRenderTime = 0;
+let heroFrameRateWindowStart = 0;
+let heroFrameRateWindowFrames = 0;
+let lastHeroMediaTime = null;
 const heroRenderInterval = 1000 / 15; // Target 30 frames per second.
 const maxHeroCanvasWidth = 640;
 const maxHeroCanvasHeight = 360;
@@ -85,13 +88,39 @@ function drawHeroVideoFrame() {
     drawHeroSource(heroVideo, heroVideo.videoWidth, heroVideo.videoHeight);
 }
 
+// Log the number of distinct video frames observed each second.
+function logHeroFrameRate(mediaTime) {
+    if (mediaTime === lastHeroMediaTime) return;
+    lastHeroMediaTime = mediaTime;
+
+    const now = performance.now();
+    if (!heroFrameRateWindowStart) {
+        heroFrameRateWindowStart = now;
+        return;
+    }
+
+    heroFrameRateWindowFrames += 1;
+    const elapsed = now - heroFrameRateWindowStart;
+    if (elapsed >= 1000) {
+        const frameRate = heroFrameRateWindowFrames / (elapsed / 1000);
+        console.log(`Hero video frame rate: ${frameRate.toFixed(1)} FPS`);
+        heroFrameRateWindowStart = now;
+        heroFrameRateWindowFrames = 0;
+    }
+}
+
 // Keep canvas processing synchronized to video frames, with a fallback for older browsers.
 function requestHeroFrame() {
     if (heroFrameRequested || heroVideo.paused || heroVideo.ended) return;
     heroFrameRequested = true;
 
-    const renderFrame = function () {
+    const renderFrame = function (metadata) {
         heroFrameRequested = false;
+        const mediaTime = metadata && typeof metadata.mediaTime === 'number'
+            ? metadata.mediaTime
+            : heroVideo.currentTime;
+        //logHeroFrameRate(mediaTime);
+
         const now = performance.now();
         if (now - lastHeroRenderTime >= heroRenderInterval) {
             drawHeroVideoFrame();
@@ -144,24 +173,26 @@ window.addEventListener('resize', function () {
 // Load the animated code background only on non-mobile viewports.
 const mobileViewport = window.matchMedia('(max-width: 767px)');
 const backgroundFrame = document.getElementById('background-frame');
-const backgroundSource = backgroundFrame.dataset.src;
+if (backgroundFrame) {
+    const backgroundSource = backgroundFrame.dataset.src;
 
-function updateBackgroundForViewport() {
-    if (mobileViewport.matches) {
-        backgroundFrame.remove();
-        return;
+    function updateBackgroundForViewport() {
+        if (mobileViewport.matches) {
+            backgroundFrame.remove();
+            return;
+        }
+
+        if (!backgroundFrame.isConnected) {
+            document.body.prepend(backgroundFrame);
+        }
+        if (!backgroundFrame.hasAttribute('src')) {
+            backgroundFrame.src = backgroundSource;
+        }
     }
 
-    if (!backgroundFrame.isConnected) {
-        document.body.prepend(backgroundFrame);
-    }
-    if (!backgroundFrame.hasAttribute('src')) {
-        backgroundFrame.src = backgroundSource;
-    }
+    mobileViewport.addEventListener('change', updateBackgroundForViewport);
+    updateBackgroundForViewport();
 }
-
-mobileViewport.addEventListener('change', updateBackgroundForViewport);
-updateBackgroundForViewport();
 
 const pressCanvas = document.getElementById('pressCanvas');
 const pressContext = pressCanvas.getContext('2d');

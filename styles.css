@@ -53,7 +53,7 @@ body {
     opacity: 0.7;
     z-index: 0;
     pointer-events: none;
-    filter: blur(1.5px) brightness(0.35) contrast(1.15);
+    filter: blur(1.5px) brightness(0.6) contrast(1.15);
     animation:
         backgroundApparition 5s ease-out forwards,
         backgroundAnimation 60s linear 10s infinite alternate;
@@ -67,15 +67,15 @@ body {
 
 @keyframes backgroundAnimation {
     0% {
-        transform: translate(0, 0);
+        /* transform: translate(0, 0); */
         opacity: 0.7;
     }
     50% {
         opacity: 0.3;
-        transform: translate(-5%, -5%);
+        /* transform: translate(-5%, -5%); */
     }
     100% {
-        transform: translate(0, 0);
+        /* transform: translate(0, 0); */
         opacity: 0.1;
     }
 }
@@ -101,7 +101,8 @@ a {
 .hero-banner {
     position: relative;
     z-index: 1;
-    height: auto;
+    height: 70vh;
+    height: 70dvh;
     margin: -20px -15px 30px;
     overflow: hidden;
     border-bottom: 1px solid var(--border-color);
