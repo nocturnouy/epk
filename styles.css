@@ -243,6 +243,12 @@ header {
     font-size: 13px;
 }
 
+.mixcloud-player {
+    display: block;
+    width: 100%;
+    border: 0;
+}
+
 .genre-tags {
     display: flex;
     flex-wrap: wrap;

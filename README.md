@@ -18,10 +18,16 @@ information, and an animated code-themed background.
 - Falls back to the locally processed hero image if video playback fails.
 - Does not load the animated code-background iframe on mobile viewports.
 - Press photo drawn into a canvas with grayscale and contrast filtering.
-- Links to the artist's Mixcloud archive, Instagram, and booking email.
+- Embedded Mixcloud player for the artist's `fu3ga` profile, plus Instagram
+  and booking email links.
 - System clock showing the viewer's local time.
 - Latest repository commit date fetched from the GitHub API and displayed in
   UTC. If the request fails, the status displays `SYS_UPDATE: OFFLINE`.
+- Translations are loaded from `locales/<language>.json` based on the first two
+  characters of the browser's preferred locale; `?lang=<language>` overrides
+  that locale for testing (for example, `?lang=es`). English remains the
+  default and fallback. Add a JSON file for each supported language without
+  changing the script.
 - Reduced page styling is organized in a dedicated stylesheet; page behavior
   is in a separate JavaScript file.
 
@@ -31,7 +37,8 @@ information, and an animated code-themed background.
 | --- | --- |
 | `index.html` | Main press kit page and content markup; GitHub Pages entry point |
 | `styles.css` | Page styling, responsive layout, and background layering |
-| `scripts.js` | Canvas image processing, video FPS logging, system clock, and GitHub update lookup |
+| `scripts.js` | Canvas image processing, video FPS logging, system clock, GitHub update lookup, and locale loading |
+| `locales/*.json` | Translations for page elements marked with `data-i18n`, keyed by language |
 | `background.html` | Animated code background rendered in the page iframe |
 | `media/video-hero.mp4` | Local source video for the canvas hero banner |
 | `media/hero-banner.jpg` | Still-image fallback for the canvas hero banner |
@@ -44,6 +51,13 @@ information, and an animated code-themed background.
   button in `index.html` to it.
 
 ## Changelog
+
+### 0.0.6
+
+- Added browser-language detection and JSON-based translations, with URL
+  overrides such as `?lang=fr` for testing.
+- Added the Mixcloud player embed for the `fu3ga` profile.
+- Updated the displayed page version to `0.0.6`.
 
 ### 0.0.5
 

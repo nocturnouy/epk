@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PRESS KIT // ARTIST ARCHIVE</title>
+    <title data-i18n="page_title">PRESS KIT // ARTIST ARCHIVE</title>
     
     <!-- Google Fonts: Share Tech Mono for terminal headers & Inter for readable prose -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -13,10 +13,10 @@
     <script src="scripts.js" defer></script>
 </head>
 <body>
-    <iframe id="background-frame" class="background-iframe" data-src="background.html" title="Animated background"></iframe>
+    <iframe id="background-frame" class="background-iframe" data-src="background.html" title="Animated background" data-i18n-title="background_title"></iframe>
 
-    <section class="hero-banner" aria-label="Artist hero banner">
-        <canvas id="heroCanvas" role="img" aria-label="Santísima Fu3ga hero banner"></canvas>
+    <section class="hero-banner" aria-label="Artist hero banner" data-i18n-aria-label="hero_banner_alt">
+        <canvas id="heroCanvas" role="img" aria-label="Santísima Fu3ga hero banner" data-i18n-aria-label="hero_banner_alt"></canvas>
         <span id="hero-media-error" class="hero-banner-error" role="status" hidden></span>
     </section>
 
@@ -24,7 +24,7 @@
         
         <!-- SYSTEM STATUS BAR -->
         <div class="system-bar">
-            <span>TERMINAL_VER: 0.0.5 // <span id="sys-update" role="status">SYS_UPDATE: FETCHING...</span></span>
+            <span>TERMINAL_VER: 0.0.6 // <span id="sys-update" role="status">SYS_UPDATE: FETCHING...</span></span>
             <span>LOCATION: NANTES, FR / INTL</span>
             <span>STATUS: <span class="status-tag">[BOOKINGS OPEN]</span></span>
             <span id="sys-clock">SYS_TIME: --:--:--</span>
@@ -33,7 +33,7 @@
         <!-- HEADER SECTION -->
         <header>
             <h1 class="artist-title">SANTISIMA FU3GA</h1>
-            <p class="artist-subtitle">DJ, Producer & Multimedia Artist</p>
+            <p class="artist-subtitle" data-i18n="artist_subtitle">DJ, Producer & Multimedia Artist</p>
         </header>
 
         <!-- MAIN LAYOUT GRID -->
@@ -44,20 +44,17 @@
                 
                 <!-- BIOGRAPHY CARD -->
                 <section class="card">
-                    <div class="card-header">> 01_BIOGRAPHY</div>
-                    <p class="bio-text">
+                    <div class="card-header" data-i18n="section_biography">> 01_BIOGRAPHY</div>
+                    <p class="bio-text" data-i18n="bio_intro">
                         Santisima Fu3ga is a Uruguay-born DJ, producer, and cultural organizer based in the west of France, bridging
                         mainstream Latin frequencies with cutting-edge alternative producers. Moving fluidly through latin club, neo
                         perreo, baile funk, and latin core, her sets deliver high-energy, versatile dancefloor experiences that defy
                         single-note atmospheres and keep rooms constantly shifting.
                     </p>
                     <p class="bio-text">
-                        As the founder and curator of the <a href="https://www.instagram.com/santamuerte.perreo/" target="_blank">Santa
-                            Muerte Perreo</a> collective, her practice is deeply anchored in community advocacy for the Latin American
-                        migrant and queer diaspora. Transforming the dancefloor into a shared, high-voltage ritual, she creates vital
-                        spaces of resistance, visibility, and alternative club culture. Simultaneously expanding into sound production
-                        and multimedia installations, Santisima Fu3ga translates raw physical club urgency into sharp, austere artistic
-                        statements.
+                        <span data-i18n="bio_collective_before">As the founder and curator of the </span>
+                        <a href="https://www.instagram.com/santamuerte.perreo/" target="_blank" data-i18n="bio_collective_link">Santa Muerte Perreo</a>
+                        <span data-i18n="bio_collective_after"> collective, her practice is deeply anchored in community advocacy for the Latin American migrant and queer diaspora. Transforming the dancefloor into a shared, high-voltage ritual, she creates vital spaces of resistance, visibility, and alternative club culture. Simultaneously expanding into sound production and multimedia installations, Santisima Fu3ga translates raw physical club urgency into sharp, austere artistic statements.</span>
                     </p>
                 
                     <div class="genre-tags">
@@ -68,31 +65,34 @@
                     </div>
                 </section>
 
-                <!-- AUDIO / SOUNDCLOUD MIXES -->
+                <!-- MIXCLOUD MIXES -->
                 <section class="card">
-                    <div class="card-header">> 02_SOUND & MIXES</div>
-                    <p class="bio-text">
+                    <div class="card-header" data-i18n="section_sound">> 02_MIXES</div>
+                    <p class="bio-text" data-i18n="sound_intro">
                         Listen to a selection of curated mixes and live recordings.
                     </p>
-                    <div class="coming-soon-card" role="status">
-                        <span class="coming-soon-status">SIGNAL_PENDING</span>
-                        <h3>RECORDED SETS // COMING SOON</h3>
-                        <p>New mixes and live recordings are being prepared for the archive.</p>
-                    </div>
-
-                    <a class="btn btn-coming-soon" aria-disabled="true" tabindex="-1">SOUNDCLOUD ARCHIVE // COMING SOON</a>
+                    <iframe
+                        class="mixcloud-player"
+                        title="Mixcloud player for fu3ga"
+                        data-i18n-title="mixcloud_player_title"
+                        src="https://www.mixcloud.com/widget/iframe/?hide_cover=1&amp;feed=%2Ffu3ga%2F"
+                        width="100%"
+                        height="400"
+                        frameborder="0"
+                        allow="autoplay"
+                        loading="lazy"></iframe>
                 </section>
 
                 <!-- GIGS CARD -->
                 <section class="card">
-                    <div class="card-header">> 02_SELECTED GIGS</div>
+                    <div class="card-header" data-i18n="section_gigs">> 02_SELECTED GIGS</div>
                 
                     <div class="gigs-category">
-                        <h3>// VENUES & CLUBS</h3>
+                        <h3 data-i18n="category_venues">// VENUES & CLUBS</h3>
                         <table class="data-table">
                             <tr>
-                                <td class="date">Ongoing</td>
-                                <td>OHM Town <span style="color: var(--accent-color); font-size: 11px;">(Santa Muerte Residency)</span></td>
+                                <td class="date" data-i18n="ongoing">Ongoing</td>
+                                <td>OHM Town <span style="color: var(--accent-color); font-size: 11px;" data-i18n="residency">(Santa Muerte Residency)</span></td>
                                 <td class="location">Nantes, FR</td>
                             </tr>
                             <tr>
@@ -119,7 +119,7 @@
                     </div>
                 
                     <div class="gigs-category" style="margin-top: 20px;">
-                        <h3>// FESTIVALS & OPEN-AIRS</h3>
+                        <h3 data-i18n="category_festivals">// FESTIVALS & OPEN-AIRS</h3>
                         <table class="data-table">
                             <tr>
                                 <td class="date">2026</td>
@@ -135,10 +135,10 @@
                     </div>
                 
                     <div class="gigs-category" style="margin-top: 20px;">
-                        <h3>// NOTABLE COLLABORATIONS</h3>
+                        <h3 data-i18n="category_collaborations">// NOTABLE COLLABORATIONS</h3>
                         <p class="collab-text" style="font-family: var(--font-mono); font-size: 13px; color: var(--text-main);">
-                            Shared lineups and collaborative showcases with <strong>Dengue Dengue Dengue</strong>,
-                            <strong>Lula666</strong>, <strong>Highfem</strong> and others...
+                            <span data-i18n="collaborations_before">Shared lineups and collaborative showcases with </span><strong>Dengue Dengue Dengue</strong>,
+                            <strong>Lula666</strong>, <strong>Highfem</strong> <span data-i18n="collaborations_after">and others...</span>
                         </p>
                     </div>
                 </section>
@@ -152,28 +152,28 @@
                 <section class="card">
                     <div class="card-header">> PRESS_IMAGE_01</div>
                     <div class="media-box">
-                        <canvas id="pressCanvas" role="img" aria-label="Artist press photo"></canvas>
+                        <canvas id="pressCanvas" role="img" aria-label="Artist press photo" data-i18n-aria-label="press_photo_alt"></canvas>
                         <span id="press-image-error" class="media-overlay" role="status" hidden></span>
                         <span class="media-overlay">CAM_02 [REC]</span>
                     </div>
-                    <a class="btn btn-coming-soon press-download" aria-disabled="true" tabindex="-1">PRESS KIT DOWNLOAD // COMING SOON</a>
+                    <a class="btn btn-coming-soon press-download" aria-disabled="true" tabindex="-1" data-i18n="press_kit_coming_soon">PRESS KIT DOWNLOAD // COMING SOON</a>
                 </section>
 
                 <!-- TECHNICAL RIDER -->
                 <section class="card">
-                    <div class="card-header">> TECHNICAL RIDER</div>
+                    <div class="card-header" data-i18n="section_rider">> TECHNICAL RIDER</div>
                     <ul class="rider-list">
-                        <li><span>PLAYERS</span> <span>3x Pioneer CDJ-3000</span></li>
-                        <li><span>MIXER</span> <span>Pioneer DJM-900NXS2 / V10</span></li>
-                        <li><span>MONITORS</span> <span>2x High-Power Booth Stereo</span></li>
-                        <li><span>VISUALS</span> <span>HDMI</span></li>
+                        <li><span data-i18n="rider_players">PLAYERS</span> <span>3x Pioneer CDJ-3000</span></li>
+                        <li><span data-i18n="rider_mixer">MIXER</span> <span>Pioneer DJM-900NXS2 / V10</span></li>
+                        <li><span data-i18n="rider_monitors">MONITORS</span> <span data-i18n="rider_monitor_description">2x High-Power Booth Stereo</span></li>
+                        <li><span data-i18n="rider_visuals">VISUALS</span> <span>HDMI</span></li>
                     </ul>
                 </section>
 
                 <!-- DIRECT CONTACT / BOOKING -->
                 <section class="card">
-                    <div class="card-header">> BOOKING & CONTACT</div>
-                    <p class="bio-text bio-text-small">
+                    <div class="card-header" data-i18n="section_contact">> BOOKING & CONTACT</div>
+                    <p class="bio-text bio-text-small" data-i18n="booking_intro">
                         For worldwide booking requests, festival programming, and visual art inquiries:
                     </p>
                     <a href="mailto:santamuerte.perreo@protonmail.com" class="btn booking-link">santamuerte.perreo@protonmail.com</a>
@@ -185,7 +185,7 @@
 
         <!-- FOOTER -->
         <footer>
-            <div>© 2026 ALL RIGHTS RESERVED // SURVEILLANCE ARCHIVE</div>
+            <div data-i18n="footer_rights">© 2026 ALL RIGHTS RESERVED // SURVEILLANCE ARCHIVE</div>
             <div class="social-links">
                 <a href="https://www.instagram.com/santisima.fu3ga" target="_blank">INSTAGRAM</a>
                 <a href="https://www.mixcloud.com/fu3ga" target="_blank">MIXCLOUD</a>

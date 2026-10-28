@@ -256,3 +256,55 @@ async function displayLastUpdate() {
 }
 
 displayLastUpdate();
+
+// Apply translations based on the URL override or the browser's preferred language.
+async function applyLanguage() {
+    const languageOverride = new URLSearchParams(window.location.search).get('lang');
+    const preferredLanguage = navigator.languages && navigator.languages.length
+        ? navigator.languages[0]
+        : navigator.language;
+    const locale = languageOverride || preferredLanguage;
+    const language = typeof locale === 'string'
+        ? locale.trim().slice(0, 2).toLowerCase()
+        : 'en';
+    if (!language || language === 'en') return;
+
+    try {
+        const response = await fetch(`locales/${language}.json`);
+        if (!response.ok) {
+            throw new Error(`Translation file for "${language}" returned ${response.status}`);
+        }
+
+        const translations = await response.json();
+        if (!translations || typeof translations !== 'object' || Array.isArray(translations)) {
+            throw new Error('Translation file must contain a JSON object');
+        }
+
+        document.querySelectorAll('[data-i18n]').forEach(function (element) {
+            const key = element.dataset.i18n;
+            if (typeof translations[key] === 'string') {
+                element.textContent = translations[key];
+            }
+        });
+
+        document.querySelectorAll('[data-i18n-aria-label]').forEach(function (element) {
+            const key = element.dataset.i18nAriaLabel;
+            if (typeof translations[key] === 'string') {
+                element.setAttribute('aria-label', translations[key]);
+            }
+        });
+
+        document.querySelectorAll('[data-i18n-title]').forEach(function (element) {
+            const key = element.dataset.i18nTitle;
+            if (typeof translations[key] === 'string') {
+                element.setAttribute('title', translations[key]);
+            }
+        });
+
+        document.documentElement.lang = language;
+    } catch (error) {
+        console.error(`Could not load "${language}" translations; keeping the English copy.`, error);
+    }
+}
+
+applyLanguage();
