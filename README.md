@@ -43,6 +43,7 @@ information, and an animated code-themed background.
 | `media/video-hero.mp4` | Local source video for the canvas hero banner |
 | `media/hero-banner.jpg` | Still-image fallback for the canvas hero banner |
 | `media/bio_photo.jpg` | Local source image for the press-photo canvas |
+| `press/*.jpeg` | Additional press photography and visual assets for promo use and editorial sharing |
 
 
 ## Pending
@@ -51,6 +52,15 @@ information, and an animated code-themed background.
   button in `index.html` to it.
 
 ## Changelog
+
+### 0.1
+
+- Updated the displayed page version to `0.1`.
+- Added the recent hero and press imagery to the project assets, including the
+  localized banner image, portrait photo, and additional press stills in the
+  `media/` and `press/` folders.
+- Documented the new image assets in the project-file overview so the visual
+  set is easier to find and reuse.
 
 ### 0.0.6
 
