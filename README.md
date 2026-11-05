@@ -19,7 +19,9 @@ information, and an animated code-themed background.
 - Does not load the animated code-background iframe on mobile viewports.
 - Press photo drawn into a canvas with grayscale and contrast filtering.
 - Embedded Mixcloud player for the artist's `fu3ga` profile, plus Instagram
-  and booking email links.
+  and booking email links, with a direct Mixcloud listening link.
+- Umami analytics for page visits and selected link clicks, including Mixcloud,
+  Instagram, booking email, and press-kit download events.
 - System clock showing the viewer's local time.
 - Latest repository commit date fetched from the GitHub API and displayed in
   UTC. If the request fails, the status displays `SYS_UPDATE: OFFLINE`.
@@ -52,6 +54,12 @@ information, and an animated code-themed background.
   button in `index.html` to it.
 
 ## Changelog
+
+### 0.1.1
+
+- Updated the displayed page version to `0.1.1`.
+- Added Umami analytics to track page visits and selected link-click events.
+- Added a direct Mixcloud listening link with French translation.
 
 ### 0.1
 
